@@ -1,0 +1,202 @@
+<html>
+<head>
+<script language="javascript">
+<!--
+/*
+<body>
+</body>
+</html>
+*/
+-->
+</script> 
+    
+</head>
+<body>
+    
+
+<div align="center">
+    <p>Enter URL for Company List XML File</p>
+    <p><input type="text" id="Text_Input"/></p>
+    <button id="click">Submit Query</button>
+</div>
+
+
+    
+<script type="text/javascript">
+    document.getElementById("click").onclick = function(){Parsing()};
+    
+    
+    function Parsing(){
+        var data_xml = document.getElementById("Text_Input").value;
+        
+        if(!data_xml){
+            window.alert("XML file's name is empty!");
+            return;
+        }else{
+            var xmlDoc = loadXML(data_xml);
+        }
+            
+            if(xmlDoc == false)  //if do not contain company entries, stop continue
+                return;
+            else{
+                
+            var MyWindow = window.open();
+            
+            MyWindow.focus();
+            
+            
+            MyWindow.document.write("<html>");
+            MyWindow.document.write("<body>");
+            MyWindow.document.write("<table border='3'");
+            MyWindow.document.write("<tr>");
+            var data_header = xmlDoc.getElementsByTagName("Data");
+            for(var x=0; x<data_header.length; x++){
+                 MyWindow.document.write("<th>"+data_header[x].childNodes[0].nodeValue+"</th>");              
+            }
+            MyWindow.document.write("</tr>");
+        
+        var Row;
+        Row = xmlDoc.getElementsByTagName("Row");
+        
+        for(var i=0; i<Row.length; i++){ //traverse nodes
+            MyWindow.document.write("<tr><td>");
+            try{ 
+                //tag of Network
+                if(Row[i].getElementsByTagName("Network")[0].childNodes[0]){ 
+                    MyWindow.document.write(Row[i].getElementsByTagName("Network")[0].childNodes[0].nodeValue);
+                }
+                else{
+                     MyWindow.document.write(" ");
+                }
+                MyWindow.document.write("</td><td>");
+                
+                //Tag of Owner
+                 if(Row[i].getElementsByTagName("Owner")[0].childNodes[0]) 
+                {
+                    
+                    MyWindow.document.write(Row[i].getElementsByTagName("Owner")[0].childNodes[0].nodeValue);
+                }
+                else
+                {
+                     MyWindow.document.write(" ");
+                }
+                 MyWindow.document.write("</td><td>");
+               
+                //Tag of Feeds
+                if(Row[i].getElementsByTagName("Feeds")[0].getElementsByTagName("Feed").length > 0)
+                {
+                    var Feed_Tag = Row[i].getElementsByTagName("Feeds")[0].getElementsByTagName("Feed");
+                    
+                    for(var j=0; j<Feed_Tag.length; j++){
+                        if(Feed_Tag[j].childNodes[0]== null){
+                          MyWindow.document.write(" ");
+                        }else{
+                            if(j==0)
+                            {
+                                MyWindow.document.write("<ul>");
+                            }                       
+                            MyWindow.document.write("<li>"+Feed_Tag[j].childNodes[0].nodeValue+"</li>");
+                              }
+                    MyWindow.document.write("</ul>");
+                    }
+                }
+                else
+                {
+                     MyWindow.document.write("  ");
+                }
+                 MyWindow.document.write("</td><td>");
+                
+                
+                //Tag of Notes
+                if(Row[i].getElementsByTagName("Notes")[0].childNodes[0])
+                {
+                    MyWindow.document.write(Row[i].getElementsByTagName("Notes")[0].childNodes[0].nodeValue);
+                }
+                else
+                {
+                     MyWindow.document.write(" ");
+                }
+                 MyWindow.document.write("</td><td>");
+                
+                //Tag of HomePage
+                if(Row[i].getElementsByTagName("HomePage")[0].childNodes[0])
+                {
+                    var link_address=Row[i].getElementsByTagName("HomePage")[0].childNodes[0].data;
+                    MyWindow.document.write("<a href = '"+link_address+"'>"+link_address+"</a>");
+                }
+            
+                else
+                {
+                     MyWindow.document.write(" ");
+                }
+                 MyWindow.document.write("</td><td>");
+                
+                //Tag of Logo
+                if(Row[i].getElementsByTagName("Logo")[0].childNodes[0])
+                {
+                    MyWindow.document.write("<img src='"+Row[i].getElementsByTagName("Logo")[0].childNodes[0].nodeValue+"' width='128' height='128'>");
+                }
+                else
+                {
+                     MyWindow.document.write(" ");
+                }
+            }
+            catch(err){
+                MyWindow.document.write("Err:"+err.message);
+            }
+            MyWindow.document.write("</td></tr>");
+           
+        }
+         MyWindow.document.write("</table>");
+            MyWindow.document.write("<noscript"); 
+            MyWindow.document.write("</body>");
+            MyWindow.document.write("</html>");
+    }
+    }
+          
+    function loadXML(url) { 
+        var Row_number;
+        
+        if (window.XMLHttpRequest)
+        {  // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+        else  // code for IE6, IE5
+        {  
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            
+        }
+        xmlhttp.open("GET",url,false); //open, send, responseXML are
+        if(xmlhttp.readyState==4)
+        {  
+            if(xmlhttp.status==200) 
+                return true; //exist
+            else if(xmlhttp.status==404)
+            {
+                window.alert("XML file not found!");
+                return false; //not exist  
+            }
+            else alert("Error"); //Error
+        }
+        xmlhttp.send(); //properties of XMLHTTPRequest
+        
+
+        xmlDoc=xmlhttp.responseXML;
+        if(xmlDoc.documentElement.nodeName == "parsererror") //Invalid file
+        {
+            window.alert("Error in XML file!");
+            return false;
+        }
+        else if(Row_number = xmlDoc.getElementsByTagName("Row").length==0){ //do not contain company
+            window.alert("XML files does not contain company entries!");
+            return false;
+        }
+        else 
+           return xmlDoc;
+    }
+        
+</script>   
+<noscript>
+</body>
+</html>
+
